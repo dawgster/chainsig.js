@@ -1,4 +1,4 @@
-import { FailoverRpcProvider, JsonRpcProvider } from '@near-js/providers'
+import { FailoverRpcProvider, JsonRpcProvider, Provider } from '@near-js/providers'
 import { type Action, actionCreators } from '@near-js/transactions'
 import { type FinalExecutionOutcome } from '@near-js/types'
 import { getTransactionLastResult } from '@near-js/utils'
@@ -61,7 +61,7 @@ export class ChainSignatureContract {
         : [`https://rpc.${this.networkId}.near.org`]
 
     this.provider = new FailoverRpcProvider(
-      rpcProviderUrls.map((url) => new JsonRpcProvider({ url }))
+      rpcProviderUrls.map((url) => new JsonRpcProvider({ url }) as Provider)
     )
   }
 
