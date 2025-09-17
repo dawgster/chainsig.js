@@ -11,7 +11,7 @@ export async function fetchEVMFeeProperties(
   transaction: TransactionRequest
 ): Promise<EVMFeeProperties> {
   const [gas, feeData] = await Promise.all([
-    client.estimateGas(transaction),
+    client.estimateGas({ account: transaction.from, ...transaction }),
     client.estimateFeesPerGas(),
   ])
 
