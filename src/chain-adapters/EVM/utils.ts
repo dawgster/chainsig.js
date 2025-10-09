@@ -12,7 +12,7 @@ export async function fetchEVMFeeProperties(
 ): Promise<EVMFeeProperties> {
   const gasPromise = transaction.gas
     ? Promise.resolve(transaction.gas)
-    : client.estimateGas(transaction)
+    : client.estimateGas({ account: transaction.from, ...transaction })
   const feeDataPromise =
     transaction.maxFeePerGas && transaction.maxPriorityFeePerGas
       ? Promise.resolve({
