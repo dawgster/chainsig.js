@@ -31,39 +31,23 @@ async function main(): Promise<void> {
 
   const derivationPath = 'any_string'
 
-  const btcRpcAdapter = new chainAdapters.btc.BTCRpcAdapters.Mempool(
-    'https://mempool.space/testnet4/api'
-  )
+  const btcRpcAdapter = new chainAdapters.btc.BTCRpcAdapters.Mempool('https://mempool.space/testnet4/api')
 
-  const btcChain = new chainAdapters.btc.Bitcoin({
-    network: 'testnet',
-    contract,
-    btcRpcAdapter,
-  })
+  const btcChain = new chainAdapters.btc.Bitcoin({ network: 'testnet', contract, btcRpcAdapter })
 
-  // Derive address and public key
-  const { address, publicKey } = await btcChain.deriveAddressAndPublicKey(
-    accountId,
-    derivationPath
-  )
-
+  const { address, publicKey } = await btcChain.deriveAddressAndPublicKey(accountId, derivationPath)
   console.log('address', address)
 
-  // Check balance
-  const { balance, decimals } = await btcChain.getBalance(address)
-
+  const { balance } = await btcChain.getBalance(address)
   console.log('balance', balance)
 
-  // Create and sign transaction
-  const { transaction, hashesToSign } =
-    await btcChain.prepareTransactionForSigning({
-      publicKey,
-      from: address,
-      to: 'tb1qlj64u6fqutr0xue85kl55fx0gt4m4urun25p7q',
-      value: BigInt(100_000).toString(),
-    })
+  const { transaction, hashesToSign } = await btcChain.prepareTransactionForSigning({
+    publicKey,
+    from: address,
+    to: 'tb1qlj64u6fqutr0xue85kl55fx0gt4m4urun25p7q',
+    value: BigInt(100_000).toString(),
+  })
 
-  // Sign with MPC
   const signature = await contract.sign({
     payloads: hashesToSign,
     path: derivationPath,
@@ -71,16 +55,8 @@ async function main(): Promise<void> {
     signerAccount: account,
   })
 
-  // Add signature
-  const signedTx = btcChain.finalizeTransactionSigning({
-    transaction,
-    rsvSignatures: signature,
-  })
-
-  // Broadcast transaction
+  const signedTx = btcChain.finalizeTransactionSigning({ transaction, rsvSignatures: signature })
   const { hash: txHash } = await btcChain.broadcastTx(signedTx)
-
-  // Print link to transaction on BTC Explorer
   console.log(`https://mempool.space/testnet4/tx/${txHash}`)
 }
 

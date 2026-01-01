@@ -28,9 +28,7 @@ export const getNearAccount = async ({
     mainnet: 'https://rpc.mainnet.near.org',
   }[networkId]
 
-  if (!rpcUrl) {
-    throw new Error(`Unsupported network: ${networkId}`)
-  }
+  if (!rpcUrl) throw new Error(`Unsupported network: ${networkId}`)
 
   // Create provider using new v2.0.0+ API
   const provider = new JsonRpcProvider({

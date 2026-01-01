@@ -10,11 +10,7 @@ export const responseToMpcSignature = ({
 }: {
   signature: MPCSignature
 }): RSVSignature | Ed25519Signature | undefined => {
-  if (
-    'scheme' in signature &&
-    signature.scheme === 'Ed25519' &&
-    'signature' in signature
-  ) {
+  if ('scheme' in signature && signature.scheme === 'Ed25519' && 'signature' in signature) {
     return signature as Ed25519Signature
   }
   if (signature) {

@@ -31,10 +31,7 @@ async function main(): Promise<void> {
       'v1.signer-prod.testnet',
   })
 
-  const publicClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
-  })
+  const publicClient = createPublicClient({ chain: sepolia, transport: http() })
 
   const derivationPath = 'any_string'
 
@@ -48,23 +45,18 @@ async function main(): Promise<void> {
     accountId,
     derivationPath
   )
-
   console.log('address', address)
 
   // Check balance
   const { balance } = await evmChain.getBalance(address)
-
   console.log('balance', balance)
 
-  // Create and sign transaction
-  const { transaction, hashesToSign } =
-    await evmChain.prepareTransactionForSigning({
-      from: address as `0x${string}`,
-      to: '0x427F9620Be0fe8Db2d840E2b6145D1CF2975bcaD' as `0x${string}`,
-      value: 1285141n,
-    })
+  const { transaction, hashesToSign } = await evmChain.prepareTransactionForSigning({
+    from: address as `0x${string}`,
+    to: '0x427F9620Be0fe8Db2d840E2b6145D1CF2975bcaD' as `0x${string}`,
+    value: 1285141n,
+  })
 
-  // Sign with MPC
   const signature = await contract.sign({
     payloads: hashesToSign,
     path: derivationPath,
@@ -72,16 +64,8 @@ async function main(): Promise<void> {
     signerAccount: account,
   })
 
-  // Add signature
-  const signedTx = evmChain.finalizeTransactionSigning({
-    transaction,
-    rsvSignatures: signature,
-  })
-
-  // Broadcast transaction
+  const signedTx = evmChain.finalizeTransactionSigning({ transaction, rsvSignatures: signature })
   const { hash: txHash } = await evmChain.broadcastTx(signedTx)
-
-  // Print link to transaction on Sepolia Explorer
   console.log(`${sepolia.blockExplorers.default.url}/tx/${txHash}`)
 }
 

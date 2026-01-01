@@ -89,7 +89,6 @@ async function main(): Promise<void> {
   })
 
   const { hash: txHash } = await suiChain.broadcastTx(signedTx)
-
   console.log(`https://suiscan.xyz/testnet/tx/${txHash}`)
 }
 

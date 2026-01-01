@@ -32,7 +32,6 @@ async function main(): Promise<void> {
   })
 
   const connection = new SolanaConnection('https://api.devnet.solana.com')
-
   const derivationPath = 'any_string'
 
   const solChain = new chainAdapters.solana.Solana({
@@ -45,24 +44,18 @@ async function main(): Promise<void> {
     accountId,
     derivationPath
   )
-
   console.log('address', address)
 
   // Check balance
   const { balance } = await solChain.getBalance(address)
-
   console.log('balance', balance)
 
-  // Create and sign transaction
-  const {
-    transaction: { transaction },
-  } = await solChain.prepareTransactionForSigning({
+  const { transaction: { transaction } } = await solChain.prepareTransactionForSigning({
     from: address,
     to: '7CmF6R7kv77twtfRfwgXMrArmqLZ7M6tXbJa9SAUnviH',
     amount: 1285141n,
   })
 
-  // Sign with MPC
   const signatures = await contract.sign({
     payloads: [transaction.serializeMessage()],
     path: derivationPath,
@@ -81,8 +74,6 @@ async function main(): Promise<void> {
 
   // Broadcast transaction
   const { hash: txHash } = await solChain.broadcastTx(signedTx)
-
-  // Print link to transaction on Solana Explorer
   console.log(`https://explorer.solana.com/tx/${txHash}?cluster=devnet`)
 }
 

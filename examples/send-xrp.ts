@@ -31,24 +31,13 @@ async function main(): Promise<void> {
 
   const derivationPath = 'any_string'
 
-  // Create XRP chain adapter with testnet RPC URL
-  const xrpChain = new chainAdapters.xrp.XRP({
-    rpcUrl: 'wss://s.altnet.rippletest.net:51233',
-    contract,
-  })
+  const xrpChain = new chainAdapters.xrp.XRP({ rpcUrl: 'wss://s.altnet.rippletest.net:51233', contract })
 
-  // Derive address and public key
-  const { address, publicKey } = await xrpChain.deriveAddressAndPublicKey(
-    accountId,
-    derivationPath
-  )
-
+  const { address, publicKey } = await xrpChain.deriveAddressAndPublicKey(accountId, derivationPath)
   console.log('XRP address:', address)
   console.log('Public key:', publicKey)
 
-  // Check balance
   const { balance, decimals } = await xrpChain.getBalance(address)
-
   console.log('Balance:', balance.toString(), 'drops')
   console.log('Balance in XRP:', Number(balance) / Math.pow(10, decimals))
 
@@ -63,9 +52,6 @@ async function main(): Promise<void> {
       memo: 'Test transaction from chainsig.js',
     })
 
-  console.log('Transaction prepared for signing')
-
-  // Sign with MPC
   const signature = await contract.sign({
     payloads: hashesToSign,
     path: derivationPath,
@@ -73,19 +59,8 @@ async function main(): Promise<void> {
     signerAccount: account,
   })
 
-  console.log('Transaction signed with MPC')
-
-  // Add signature
-  const signedTx = xrpChain.finalizeTransactionSigning({
-    transaction,
-    rsvSignatures: signature,
-  })
-
-  console.log('Transaction finalized')
-
-  // Broadcast transaction
+  const signedTx = xrpChain.finalizeTransactionSigning({ transaction, rsvSignatures: signature })
   const { hash: txHash } = await xrpChain.broadcastTx(signedTx)
-
   console.log('Transaction broadcasted!')
   console.log(`Transaction hash: ${txHash}`)
   console.log(
