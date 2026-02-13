@@ -122,7 +122,7 @@ export class ChainSignatureContract {
     path: string
     predecessor: string
     IsEd25519?: boolean
-  }): Promise<UncompressedPubKeySEC1 | `Ed25519:${string}`> {
+  }): Promise<UncompressedPubKeySEC1 | `ed25519:${string}`> {
     const najPubKey = await this.provider.callFunction(
       this.contractId,
       'derived_public_key',
@@ -132,6 +132,11 @@ export class ChainSignatureContract {
         domain_id: args.IsEd25519 ? 1 : 0,
       }
     )
+    // For Ed25519 keys, return raw format (ed25519:base58key)
+    // For secp256k1 keys, convert to uncompressed SEC1 format (04 || x || y)
+    if (args.IsEd25519) {
+      return najPubKey as `ed25519:${string}`
+    }
     return najToUncompressedPubKeySEC1(najPubKey as NajPublicKey)
   }
 }

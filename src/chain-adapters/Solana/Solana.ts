@@ -54,7 +54,9 @@ export class Solana extends ChainAdapter<
       IsEd25519: true,
     })
 
+    console.log('[chainsig.js] getDerivedPublicKey returned:', pubKey)
     const base58Key = pubKey.replace('ed25519:', '')
+    console.log('[chainsig.js] after replace, base58Key:', base58Key)
     const publicKey = new PublicKey(base58Key)
 
     return {
